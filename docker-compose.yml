@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: tpch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tpch
+    ports:
+      - "5432:5432"
+    volumes:
+      # keeps your database safe when the container is stopped or removed
+      - pgdata:/var/lib/postgresql
+      # put the files made by dbgen (the .tbl files) in a ./tpch-data folder
+      # next to this file; they will appear inside the container at /tpch-data
+      - ./tpch-data:/tpch-data:ro
+    shm_size: 1gb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tpch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
