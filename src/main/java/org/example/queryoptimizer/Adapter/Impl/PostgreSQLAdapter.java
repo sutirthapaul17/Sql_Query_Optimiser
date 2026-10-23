@@ -5,16 +5,23 @@ import org.example.queryoptimizer.Adapter.DatabaseAdapter;
 import org.example.queryoptimizer.Dto.QueryPlanDto;
 import org.example.queryoptimizer.Parser.PostgreSQLPlanParser;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class PostgreSQLAdapter implements DatabaseAdapter {
 
     private final JdbcTemplate jdbcTemplate;
     private final PostgreSQLPlanParser planParser;
 
+    public PostgreSQLAdapter(
+            @Qualifier("tpchJdbcTemplate") JdbcTemplate jdbcTemplate,
+            PostgreSQLPlanParser planParser) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.planParser = planParser;
+    }
 
     @Override
     public QueryPlanDto getBaselinePlan(String validatedSql) {
