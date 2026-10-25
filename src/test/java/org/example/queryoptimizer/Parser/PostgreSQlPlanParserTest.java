@@ -1,6 +1,7 @@
 package org.example.queryoptimizer.Parser;
 
-import org.example.queryoptimizer.Dto.QueryPlanDto;
+import org.example.queryoptimizer.Target.Dto.QueryPlanDto;
+import org.example.queryoptimizer.Target.Parser.PostgreSQLPlanParser;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
 

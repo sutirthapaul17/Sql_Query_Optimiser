@@ -1,8 +1,8 @@
 package org.example.queryoptimizer.Service;
 
 
-import org.example.queryoptimizer.Dto.response.SqlAnalysisResult;
-import org.example.queryoptimizer.Service.Impl.SqlAnalysisServiceImpl;
+import org.example.queryoptimizer.Optimizer.Dto.SqlAnalysisResult;
+import org.example.queryoptimizer.Optimizer.Service.Impl.SqlAnalysisServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

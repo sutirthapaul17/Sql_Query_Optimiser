@@ -1,8 +1,8 @@
 package org.example.queryoptimizer.Adapter;
 
 
-import org.example.queryoptimizer.Adapter.Impl.PostgreSQLAdapter;
-import org.example.queryoptimizer.Dto.QueryPlanDto;
+import org.example.queryoptimizer.Target.Adapter.Impl.PostgreSQLAdapter;
+import org.example.queryoptimizer.Target.Dto.QueryPlanDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
