@@ -1,6 +1,7 @@
 package org.example.queryoptimizer.Target.Tools;
 
 
+import org.example.queryoptimizer.Target.Dto.Measurement;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class TargetDatabaseTool {
         this.mapper = mapper;
     }
 
-    public record Measurement(double executionMs, double totalCost) {}
+
 
     /** EXPLAIN (FORMAT JSON) without executing. Returns the root object, which holds the "Plan" key. */
     public Map<String, Object> explain(String sql) {
