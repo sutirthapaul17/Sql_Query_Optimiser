@@ -45,11 +45,6 @@ public class CandidateGenerator {
     private final OptimizationKnowledgeTool optimizationKnowledgeTool;
     private final PromptLoader promptLoader;
 
-//    public CandidateGenerator(ChatClient chatClient, ObjectMapper mapper) {
-//        this.chatClient = chatClient;
-//        this.mapper = mapper;
-//    }
-
     /** @param feedback why the previous candidate was rejected, or null on the first attempt */
     public Proposal propose(String userPrompt, String previousCandidate, String feedback) {
         String user = userPrompt;
