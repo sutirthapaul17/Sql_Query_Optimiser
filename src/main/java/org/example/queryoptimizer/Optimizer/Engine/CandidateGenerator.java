@@ -1,5 +1,8 @@
 package org.example.queryoptimizer.Optimizer.Engine;
 
+import lombok.RequiredArgsConstructor;
+import org.example.queryoptimizer.Optimizer.Dto.Proposal;
+import org.example.queryoptimizer.knowledge.Tools.OptimizationKnowledgeTool;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -11,6 +14,7 @@ import java.util.Map;
 
 /** Asks the LLM for a decision and, when it sees a better formulation, a candidate query. */
 @Component
+@RequiredArgsConstructor
 public class CandidateGenerator {
 
     private static final String SYSTEM = """
@@ -38,11 +42,13 @@ public class CandidateGenerator {
 
     private final ChatClient chatClient;
     private final ObjectMapper mapper;
+    private final OptimizationKnowledgeTool optimizationKnowledgeTool;
+    private final PromptLoader promptLoader;
 
-    public CandidateGenerator(ChatClient chatClient, ObjectMapper mapper) {
-        this.chatClient = chatClient;
-        this.mapper = mapper;
-    }
+//    public CandidateGenerator(ChatClient chatClient, ObjectMapper mapper) {
+//        this.chatClient = chatClient;
+//        this.mapper = mapper;
+//    }
 
     /** @param feedback why the previous candidate was rejected, or null on the first attempt */
     public Proposal propose(String userPrompt, String previousCandidate, String feedback) {
@@ -52,7 +58,18 @@ public class CandidateGenerator {
                     + "\nReason: " + feedback
                     + "\nReturn a corrected candidate, or choose KEEP_ORIGINAL.";
         }
-        String raw = chatClient.prompt().system(SYSTEM).user(user).call().content();
+        String optimizationPolicy = promptLoader.load(
+                "Prompts/Sql_optimization-Policy.txt"
+        );
+        String retrievalPolicy = promptLoader.load(
+                "Prompts/sql-optimization-retrieval-policy.txt"
+        );
+        String completeSystemPrompt = SYSTEM
+                + "\n\n"
+                + optimizationPolicy
+                + "\n\n"
+                + retrievalPolicy;
+        String raw = chatClient.prompt().system(SYSTEM).user(user).tools(optimizationKnowledgeTool).call().content();
         return parse(raw);
     }
 

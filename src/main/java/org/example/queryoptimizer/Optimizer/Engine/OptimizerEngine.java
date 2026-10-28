@@ -2,9 +2,12 @@ package org.example.queryoptimizer.Optimizer.Engine;
 
 
 import org.example.queryoptimizer.Common.PlanFacts;
+import org.example.queryoptimizer.Optimizer.Dto.OptimizationOutcome;
+import org.example.queryoptimizer.Optimizer.Dto.Proposal;
+import org.example.queryoptimizer.Target.Service.QueryResultService;
 import org.example.queryoptimizer.knowledge.KnowledgeRetriever.Chunk;
 import org.example.queryoptimizer.knowledge.Tools.KnowledgeSearchTool;
-import org.example.queryoptimizer.Optimizer.Engine.OptimizationOutcome.Decision;
+import org.example.queryoptimizer.Optimizer.Dto.OptimizationOutcome.Decision;
 import org.example.queryoptimizer.Optimizer.Engine.PlanAssessor.Flag;
 import org.example.queryoptimizer.Target.Tools.TargetDatabaseTool;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +31,7 @@ import java.util.Map;
 @Service
 public class OptimizerEngine {
 
+    private final QueryResultService queryResultService;
     private static final int MAX_CHUNK_CHARS = 1200;
     private static final int MAX_DOC_CHUNKS = 6;
 
@@ -45,6 +49,7 @@ public class OptimizerEngine {
 
     public OptimizerEngine(TargetDatabaseTool target, PlanAssessor assessor, KnowledgeSearchTool search,
                            CandidateGenerator generator,
+                           QueryResultService queryResultService,
                            @Value("${app.optimizer.min-improvement:0.05}") double minImprovement,
                            @Value("${app.optimizer.verify-execution:false}") boolean verifyExecution,
                            @Value("${app.optimizer.always-consult-llm:false}") boolean alwaysConsultLlm,
@@ -61,6 +66,7 @@ public class OptimizerEngine {
         this.maxAttempts = Math.max(1, maxAttempts);
         this.docsPerFlag = docsPerFlag;
         this.plansTopK = plansTopK;
+        this.queryResultService = queryResultService;
     }
 
     @SuppressWarnings("unchecked")
@@ -255,13 +261,73 @@ public class OptimizerEngine {
 
     // ------------------------------------------------------------------ small helpers
 
-    private static OptimizationOutcome outcome(Decision d, String original, String finalSql, String reasoning,
-                                               List<String> flags, List<String> idx, List<String> settings,
-                                               Double baselineCost, Double candidateCost, Double baselineMs,
-                                               Double candidateMs, Boolean match, List<String> evidence,
-                                               List<String> warnings) {
-        return new OptimizationOutcome(d, original, finalSql, reasoning, flags, idx, settings, baselineCost,
-                candidateCost, baselineMs, candidateMs, match, evidence, warnings);
+//    private static OptimizationOutcome outcome(Decision d, String original, String finalSql, String reasoning,
+//                                               List<String> flags, List<String> idx, List<String> settings,
+//                                               Double baselineCost, Double candidateCost, Double baselineMs,
+//                                               Double candidateMs, Boolean match, List<String> evidence,
+//                                               List<String> warnings) {
+//        return new OptimizationOutcome(d, original, finalSql, reasoning, flags, idx, settings, baselineCost,
+//                candidateCost, baselineMs, candidateMs, match, evidence, warnings,List.of(),
+//                false  );
+//    }
+
+    private OptimizationOutcome outcome(
+            Decision d,
+            String original,
+            String finalSql,
+            String reasoning,
+            List<String> flags,
+            List<String> idx,
+            List<String> settings,
+            Double baselineCost,
+            Double candidateCost,
+            Double baselineMs,
+            Double candidateMs,
+            Boolean match,
+            List<String> evidence,
+            List<String> warnings) {
+
+        List<String> responseWarnings = new ArrayList<>(warnings);
+        List<Map<String, Object>> retrievedData = List.of();
+        Boolean dataTruncated = false;
+
+        try {
+            QueryResultService.QueryResult result =
+                    queryResultService.execute(finalSql);
+
+            retrievedData = result.rows();
+            dataTruncated = result.truncated();
+
+            if (dataTruncated) {
+                responseWarnings.add(
+                        "Results were limited to the configured maximum row count."
+                );
+            }
+
+        } catch (RuntimeException e) {
+            responseWarnings.add(
+                    "Data retrieval failed: " + rootMessage(e)
+            );
+        }
+
+        return new OptimizationOutcome(
+                d,
+                original,
+                finalSql,
+                reasoning,
+                flags,
+                idx,
+                settings,
+                baselineCost,
+                candidateCost,
+                baselineMs,
+                candidateMs,
+                match,
+                evidence,
+                responseWarnings,
+                retrievedData,
+                dataTruncated
+        );
     }
 
     private static String normalize(String s) {

@@ -1,4 +1,4 @@
-package org.example.queryoptimizer.Optimizer.Engine;
+package org.example.queryoptimizer.Optimizer.Dto;
 
 import java.util.List;
 

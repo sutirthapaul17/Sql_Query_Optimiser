@@ -6,7 +6,7 @@ import org.example.queryoptimizer.Optimizer.Dto.OptimizationDecision;
 import org.example.queryoptimizer.Optimizer.Dto.OptimizationRecommendationDto;
 import org.example.queryoptimizer.Optimizer.Dto.OptimizationResponseDto;
 import org.example.queryoptimizer.Optimizer.Dto.QueryAnalysisResponseDto;
-import org.example.queryoptimizer.Optimizer.Engine.OptimizationOutcome;
+import org.example.queryoptimizer.Optimizer.Dto.OptimizationOutcome;
 import org.example.queryoptimizer.Optimizer.Engine.OptimizerEngine;
 import org.example.queryoptimizer.Optimizer.Service.OptimizationService;
 import org.springframework.stereotype.Service;

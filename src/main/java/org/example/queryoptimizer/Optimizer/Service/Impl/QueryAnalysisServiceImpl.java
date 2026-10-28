@@ -1,6 +1,7 @@
 package org.example.queryoptimizer.Optimizer.Service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.queryoptimizer.Optimizer.Dto.OptimizationResponseDto;
 import org.example.queryoptimizer.Target.Adapter.Impl.PostgreSQLAdapter;
 import org.example.queryoptimizer.Target.Dto.QueryPlanDto;
 import org.example.queryoptimizer.Target.Dto.QueryPlanFindingDto;
@@ -30,7 +31,7 @@ public class QueryAnalysisServiceImpl
 
     @Override
     @Transactional(readOnly = true)
-    public QueryAnalysisResponseDto analyze(
+    public OptimizationResponseDto analyze(
             QueryAnalysisRequestDto request) {
 
 
@@ -58,11 +59,11 @@ public class QueryAnalysisServiceImpl
                 findings
         );
 
-        // 5. Pass the analysis to the optimization intelligence pipeline.
-        optimizationService.optimize(queryAnalysis);
+        // 5. Capture the optimization result.
+        OptimizationResponseDto optimizationResponse =
+                optimizationService.optimize(queryAnalysis);
 
-        // Temporary: preserve the existing return type.
-        // We'll change the response contract to include optimization results.
-        return queryAnalysis;
+        // 6. Return the actual optimization response.
+        return optimizationResponse;
     }
 }

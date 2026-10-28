@@ -1,6 +1,7 @@
 package org.example.queryoptimizer.knowledge.Controller;
 
 
+import org.example.queryoptimizer.knowledge.Dto.Result;
 import org.example.queryoptimizer.knowledge.Ingestion.PlanLogIngestionService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +26,9 @@ public class PlanLogIngestionController {
      * Put your held-out test query IDs in "exclude" so the RAG never sees them.
      */
     @PostMapping("/ingest-plan-log")
-    public PlanLogIngestionService.Result ingest(@RequestParam String file,
-                                                 @RequestParam(required = false) String label,
-                                                 @RequestParam(defaultValue = "") Set<String> exclude)
+    public Result ingest(@RequestParam String file,
+                         @RequestParam(required = false) String label,
+                         @RequestParam(defaultValue = "") Set<String> exclude)
             throws IOException {
         return service.ingest(file, label, exclude);
     }

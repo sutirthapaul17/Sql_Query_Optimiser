@@ -1,6 +1,8 @@
 package org.example.queryoptimizer.knowledge.Ingestion;
 
 
+import lombok.RequiredArgsConstructor;
+import org.example.queryoptimizer.knowledge.Dto.Result;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
  * This class only reads a file path, so it does not depend on the evaluation package.
  */
 @Service
+@RequiredArgsConstructor
 public class PlanLogIngestionService {
 
     public static final String SOURCE_TYPE = "PLAN_LOG";
@@ -39,12 +42,12 @@ public class PlanLogIngestionService {
     private final VectorStore vectorStore;
     private final ObjectMapper mapper;
 
-    public PlanLogIngestionService(VectorStore vectorStore, ObjectMapper mapper) {
-        this.vectorStore = vectorStore;
-        this.mapper = mapper;
-    }
+//    public PlanLogIngestionService(VectorStore vectorStore, ObjectMapper mapper) {
+//        this.vectorStore = vectorStore;
+//        this.mapper = mapper;
+//    }
 
-    public record Result(String file, String label, int read, int ingested, int excluded, int unreadable) {}
+
 
     /**
      * @param file     path of a JSONL log written by the plan log generator

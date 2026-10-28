@@ -3,6 +3,7 @@ package org.example.queryoptimizer.Optimizer.Controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.queryoptimizer.Optimizer.Dto.OptimizationResponseDto;
 import org.example.queryoptimizer.Optimizer.Dto.QueryAnalysisRequestDto;
 import org.example.queryoptimizer.Common.ApiResponse;
 import org.example.queryoptimizer.Optimizer.Dto.QueryAnalysisResponseDto;
@@ -21,17 +22,17 @@ public class QueryAnalysisController {
     private final QueryAnalysisService queryAnalysisService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<QueryAnalysisResponseDto>>
+    public ResponseEntity<ApiResponse<OptimizationResponseDto>>
     analyzeQuery(
             @Valid @RequestBody QueryAnalysisRequestDto request
     ) {
-        QueryAnalysisResponseDto response =
+        OptimizationResponseDto response =
                 queryAnalysisService.analyze(request);
 
-        ApiResponse<QueryAnalysisResponseDto> apiResponse =
+        ApiResponse<OptimizationResponseDto> apiResponse =
                 new ApiResponse<>(
                         true,
-                        "Query analyzed successfully",
+                        "Query analysis and optimization completed",
                         response
                 );
 
